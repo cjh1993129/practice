@@ -1,12 +1,26 @@
-def conutthe(filename):
+import json
+def loadfile():
+	filename='username.json'
 	try:
-		with open(filename,encoding='utf-8') as fn:
-			contents=fn.read()
+		with open(filename) as f:
+			username=json.load(f)
 	except FileNotFoundError:
-		pass
+		return None
 	else:
-		number=contents.lower().count('the')
-		print(number)
-filenames=['57857-0.txt','57860-0.txt','pg57850.txt']
-for filename in filenames:
-	conutthe(filename)
+		return username
+
+def buildname():
+	username=input('name:    ')
+	filename = 'username.json'
+	with open(filename,'w') as f:
+		json.dump(username,f)
+	return username
+
+def greet():
+	username=loadfile()
+	if username:
+		print('welcome '+username)
+	else:
+		username=buildname()
+		print('remember you '+username)
+greet()
