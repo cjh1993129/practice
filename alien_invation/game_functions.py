@@ -41,6 +41,8 @@ def check_play_button(ai_settings,screen,stats,play_button,ship,
 	"""单击开始游戏"""
 	button_click=play_button.rect.collidepoint(mouse_x,mouse_y)
 	if button_click and not stats.game_active:
+		# 重置游戏设置
+		ai_settings.initialize_dynamic_settings()
 		# 隐藏光标
 		pygame.mouse.set_visible(False)
 		# 重置游戏
@@ -60,16 +62,20 @@ def fire_bullet(ai_settings,screen,ship,bullets):
 		new_bullet=Bullet(ai_settings,screen,ship)
 		bullets.add(new_bullet)
 
-def update_screen(ai_settings,screen,stats,ship,aliens,bullets,
+def update_screen(ai_settings,screen,stats,sb,ship,aliens,bullets,
 	play_button):
-	"""让最近绘制的屏幕可见"""
+	"""更新屏幕"""
 	screen.fill(ai_settings.bg_color)
 	for bullet in bullets.sprites():
 		bullet.draw_bullet()
 	ship.blitme()
 	aliens.draw(screen)
+	# 显示得分
+	sb.show_score()
+	# 非活动，就显示play
 	if not stats.game_active:
 		play_button.draw_button()
+	# 最近绘制的屏幕可见
 	pygame.display.flip()
 
 def update_bullets(ai_settings,screen,ship,aliens,bullets):
@@ -87,7 +93,9 @@ def check_bullet_alien_collisions(ai_settings,screen,ship,aliens,
 	"""子弹击中，则删除子弹和外星人"""
 	collisions=pygame.sprite.groupcollide(bullets,aliens,True,True)
 	if len(aliens) == 0:
+		# 删除现有子弹，加快游戏节奏
 		bullets.empty()
+		ai_settings.increase_speed()
 		create_fleet(ai_settings,screen,ship,aliens)
 
 def get_number_aliens_x(ai_settings,alien_width):
